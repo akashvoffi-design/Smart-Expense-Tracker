@@ -3,7 +3,7 @@ set -e
 echo "=== BUILD START ==="
 
 # Ensure the output directory exists
-mkdir -p staticfiles
+mkdir -p staticfiles_build/static
 
 # Create and activate an isolated virtual environment to comply with PEP 668
 if python3 -m venv .build_venv 2>/dev/null; then
@@ -22,7 +22,7 @@ else
     python3 manage.py collectstatic --noinput --clear
     if [ -n "$DATABASE_URL" ]; then
         echo "Running database migrations..."
-        python3 manage.py migrate --noinput || echo "Migrations skipped or deferred."
+        python manage.py migrate --noinput || echo "Migrations skipped or deferred."
     fi
 fi
 
