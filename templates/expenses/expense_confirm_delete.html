@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete Expense{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width:480px;padding-top:var(--space-xl);">
+  <!-- iOS-style action sheet -->
+  <div class="action-sheet" role="dialog" aria-labelledby="delete-title" aria-modal="true">
+    <div class="sheet-handle" aria-hidden="true"></div>
+
+    <!-- Warning icon -->
+    <div style="display:flex;justify-content:center;margin-bottom:var(--space-lg);">
+      <div style="
+        width:60px;height:60px;
+        border-radius:50%;
+        background:rgba(220,38,38,0.08);
+        display:flex;align-items:center;justify-content:center;
+        color:var(--error);
+      ">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14H6L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4h6v2"/>
+        </svg>
+      </div>
+    </div>
+
+    <h1 class="auth-title" id="delete-title" style="text-align:center;margin-bottom:var(--space-sm);">Delete Expense</h1>
+
+    <p style="text-align:center;color:var(--text-secondary);font-size:14px;margin-bottom:var(--space-lg);">
+      Are you sure you want to delete
+      <strong style="color:var(--text-primary);">"{{ expense.description }}"</strong>?
+      <br>
+      This action <strong>cannot be undone</strong>.
+    </p>
+
+    <!-- Expense summary -->
+    <div class="card-sm mb-lg" style="background:var(--surface);">
+      <div class="flex-between">
+        <div>
+          <div style="font-weight:600;font-size:14px;color:var(--text-primary);">{{ expense.description }}</div>
+          <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">
+            {{ expense.date|date:"d M Y" }}
+            {% if expense.category %}· {{ expense.category.name }}{% endif %}
+          </div>
+        </div>
+        <div class="money" style="color:var(--primary);font-size:1.1rem;">₹{{ expense.amount|floatformat:2 }}</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;flex-direction:column;gap:var(--space-sm);">
+      <!-- Confirm delete — POST only -->
+      <form method="post" action="{% url 'expense_delete' expense.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger w-full" id="btn-confirm-delete">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+          </svg>
+          Yes, Delete It
+        </button>
+      </form>
+
+      <!-- Cancel -->
+      <a href="{% url 'expense_list' %}" class="btn btn-ghost w-full" style="text-align:center;" id="btn-cancel-delete">
+        Cancel
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}

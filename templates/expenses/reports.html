@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Reports{% endblock %}
+{% block meta_description %}View detailed spending reports and download CSV or PDF exports.{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- Page Header -->
+  <div class="page-header flex-between" style="align-items:flex-end;flex-wrap:wrap;gap:var(--space-md);">
+    <div>
+      <h1 class="page-title-large">Reports</h1>
+      <p class="text-muted" id="reports-period-text" style="font-size:13px;margin-top:4px;">
+        <span class="period-badge" id="reports-badge">
+          {% if period == 'today' %}Today
+          {% elif period == 'week' %}This Week
+          {% else %}This Month{% endif %}
+        </span>
+        &nbsp; <span id="reports-date-range">{{ start_date|date:"d M Y" }} – {{ end_date|date:"d M Y" }}</span>
+      </p>
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="flex-row" style="flex-wrap:wrap;">
+      <a href="{% url 'export_csv' %}?period={{ period }}"
+         class="btn btn-ghost btn-sm"
+         id="btn-export-csv"
+         aria-label="Download CSV export">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download CSV
+      </a>
+      <a href="{% url 'export_pdf' %}?period={{ period }}"
+         class="btn btn-primary btn-sm"
+         id="btn-export-pdf"
+         aria-label="Download PDF export">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Download PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Period Filter -->
+  <div style="display:flex;justify-content:center;margin-bottom:var(--space-lg);">
+    <div class="segmented" role="group" aria-label="Select time period">
+      <div class="segmented-indicator" aria-hidden="true"></div>
+      <button class="segmented-btn {% if period == 'today' %}active{% endif %}" data-period="today" id="seg-today">Today</button>
+      <button class="segmented-btn {% if period == 'week' %}active{% endif %}"  data-period="week"  id="seg-week">Week</button>
+      <button class="segmented-btn {% if period == 'month' or not period %}active{% endif %}" data-period="month" id="seg-month">Month</button>
+    </div>
+  </div>
+
+  <!-- Summary Row -->
+  <div class="grid-2 mb-lg">
+    <div class="stat-card">
+      <span class="stat-label">Total Spent</span>
+      <span class="stat-value money" id="reports-total-spent" data-value="{{ total_amount|floatformat:2 }}">₹{{ total_amount|floatformat:2 }}</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Transactions</span>
+      <span class="stat-value money" id="reports-transactions" data-value="{{ transaction_count }}">{{ transaction_count }}</span>
+    </div>
+  </div>
+
+  <div id="reports-data-section">
+  <!-- Charts -->
+  <div class="grid-2 mb-lg" id="reports-charts-row" style="{% if not expenses %}display:none;{% endif %}">
+    <div class="chart-card">
+      <p class="chart-title">Category Breakdown</p>
+      <div class="chart-wrap" id="wrap-doughnut">
+        <canvas id="chart-doughnut" aria-label="Category spending breakdown" role="img"></canvas>
+      </div>
+    </div>
+    <div class="chart-card">
+      <p class="chart-title">Spending Over Time</p>
+      <div class="chart-wrap" id="wrap-timeseries">
+        <canvas id="chart-timeseries" aria-label="Daily spending chart" role="img"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Category Breakdown Table -->
+  <div class="card mb-lg" id="reports-category-card" style="{% if not expenses %}display:none;{% endif %}">
+    <p class="chart-title">Category Summary</p>
+    <div class="table-responsive">
+      <table class="report-table" aria-label="Category spending summary">
+        <thead>
+          <tr>
+            <th scope="col">Category</th>
+            <th scope="col">Transactions</th>
+            <th scope="col" style="text-align:right;">Amount</th>
+            <th scope="col" style="text-align:right;">% of Total</th>
+          </tr>
+        </thead>
+        <tbody id="reports-category-tbody">
+          {% for row in category_breakdown %}
+          {% with pct=row.total|floatformat:2 %}
+          <tr>
+            <td>
+              <div class="flex-row" style="gap:8px;">
+                <span class="chip-dot" style="width:8px;height:8px;border-radius:50%;background:{% if row.category__color %}{{ row.category__color }}{% else %}var(--primary){% endif %};flex-shrink:0;"></span>
+                <span style="font-weight:600;">{{ row.category__name|default:"Uncategorized" }}</span>
+              </div>
+              <div class="cat-bar" style="background:{% if row.category__color %}{{ row.category__color }}{% else %}var(--primary){% endif %};width:{% if total_amount %}{% widthratio row.total total_amount 100 %}%{% else %}0{% endif %}"></div>
+            </td>
+            <td style="color:var(--text-secondary);">{{ row.count }}</td>
+            <td class="amount-cell">₹{{ row.total|floatformat:2 }}</td>
+            <td style="text-align:right;color:var(--text-secondary);">
+              {% if total_amount %}{% widthratio row.total total_amount 100 %}%{% else %}0%{% endif %}
+            </td>
+          </tr>
+          {% endwith %}
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr style="border-top:2px solid var(--border);">
+            <td style="font-weight:700;padding-top:var(--space-sm);">Total</td>
+            <td style="font-weight:700;padding-top:var(--space-sm);" id="reports-category-foot-count">{{ transaction_count }}</td>
+            <td class="amount-cell" style="font-size:1.05rem;padding-top:var(--space-sm);" id="reports-category-foot-total">₹{{ total_amount|floatformat:2 }}</td>
+            <td style="text-align:right;padding-top:var(--space-sm);">100%</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- Full Expense Table -->
+  <div class="card" id="reports-expenses-card" style="{% if not expenses %}display:none;{% endif %}">
+    <p class="chart-title">All Transactions</p>
+    <div class="table-responsive">
+      <table class="report-table" aria-label="All expense transactions">
+        <thead>
+          <tr>
+            <th scope="col">Date</th>
+            <th scope="col">Description</th>
+            <th scope="col">Category</th>
+            <th scope="col" style="text-align:right;">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="reports-expenses-tbody">
+          {% for expense in expenses %}
+          <tr>
+            <td style="color:var(--text-secondary);white-space:nowrap;">{{ expense.date|date:"d M Y" }}</td>
+            <td style="font-weight:500;">{{ expense.description }}</td>
+            <td>
+              {% if expense.category %}
+              <span class="chip"
+                    style="background:{{ expense.category.color }}15;color:{{ expense.category.color }};">
+                <span class="chip-dot" style="background:{{ expense.category.color }};"></span>
+                {{ expense.category.name }}
+              </span>
+              {% else %}
+              <span style="color:var(--text-secondary);">—</span>
+              {% endif %}
+            </td>
+            <td class="amount-cell">₹{{ expense.amount|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div><!-- /#reports-data-section -->
+
+  <!-- Empty state -->
+  <div class="card" id="reports-empty-state" style="margin-top:var(--space-lg);{% if expenses %}display:none;{% endif %}">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">No data for this period</h2>
+      <p class="empty-text">Add some expenses to see your spending reports here.</p>
+      <a href="{% url 'expense_add' %}" class="btn btn-primary mt-md" id="btn-add-from-reports">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Add Expense
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

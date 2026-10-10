@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+{% block meta_description %}Your spending overview — totals, charts, and recent expenses.{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  <!-- ═══ Page Header ═══════════════════════════════════════════ -->
+  <div class="page-header">
+    <p class="greeting-text">{{ greeting }}</p>
+    <h1 class="page-title-large">Dashboard</h1>
+  </div>
+
+  <!-- ═══ Period Filter (Segmented Control) ══════════════════════ -->
+  <div class="mb-lg" style="display:flex;align-items:center;justify-content:center;">
+    <div class="segmented" role="group" aria-label="Select time period">
+      <div class="segmented-indicator" aria-hidden="true"></div>
+      <button
+        class="segmented-btn {% if period == 'today' %}active{% endif %}"
+        data-period="today"
+        id="seg-today"
+        aria-pressed="{% if period == 'today' %}true{% else %}false{% endif %}"
+      >Today</button>
+      <button
+        class="segmented-btn {% if period == 'week' %}active{% endif %}"
+        data-period="week"
+        id="seg-week"
+        aria-pressed="{% if period == 'week' %}true{% else %}false{% endif %}"
+      >This Week</button>
+      <button
+        class="segmented-btn {% if period == 'month' or not period %}active{% endif %}"
+        data-period="month"
+        id="seg-month"
+        aria-pressed="{% if period == 'month' or not period %}true{% else %}false{% endif %}"
+      >This Month</button>
+    </div>
+  </div>
+
+  <!-- ═══ Hero Amount Card ════════════════════════════════════════ -->
+  <div class="hero-card mb-lg" role="region" aria-label="Total spending">
+    <p class="hero-label">Total Spent</p>
+    <div class="hero-amount money" id="hero-total" data-value="{{ total_amount|floatformat:2 }}">₹{{ total_amount|floatformat:2 }}</div>
+    <p class="hero-period" id="hero-period-text">
+      {% if period == 'today' %}Today · {{ start_date|date:"d M Y" }}
+      {% elif period == 'week' %}This Week · {{ start_date|date:"d M" }} – {{ end_date|date:"d M Y" }}
+      {% else %}This Month · {{ start_date|date:"F Y" }}
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- ═══ Stat Cards ══════════════════════════════════════════════ -->
+  <div class="grid-2 mb-lg">
+    <div class="stat-card" role="region" aria-label="Number of transactions">
+      <span class="stat-label">Transactions</span>
+      <span class="stat-value money" id="stat-transactions" data-value="{{ transaction_count }}">{{ transaction_count }}</span>
+    </div>
+    <div class="stat-card" role="region" aria-label="Top category">
+      <span class="stat-label">Top Category</span>
+      <span class="stat-value" id="stat-top-category" style="font-size:1.2rem;color:var(--text-primary);">{{ top_category }}</span>
+    </div>
+  </div>
+
+  <!-- ═══ Charts Row ═══════════════════════════════════════════════ -->
+  <div class="grid-2 mb-lg">
+    <!-- Doughnut -->
+    <div class="chart-card">
+      <p class="chart-title">By Category</p>
+      <div class="chart-wrap" id="wrap-doughnut">
+        <canvas id="chart-doughnut" aria-label="Category spending breakdown" role="img"></canvas>
+      </div>
+    </div>
+
+    <!-- Time-series -->
+    <div class="chart-card">
+      <p class="chart-title">Spending Over Time</p>
+      <div class="chart-wrap" id="wrap-timeseries">
+        <canvas id="chart-timeseries" aria-label="Daily spending chart" role="img"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Recent Expenses ══════════════════════════════════════════ -->
+  <div class="section-header">
+    <p class="section-title">Recent Expenses</p>
+    <a href="{% url 'expense_list' %}?period={{ period }}" class="section-link" id="link-view-all">View all</a>
+  </div>
+
+  <div id="recent-expenses-wrapper">
+  {% if recent_expenses %}
+  <div class="expense-list" role="list" id="recent-expenses-list">
+    {% for expense in recent_expenses %}
+    <div class="expense-row" role="listitem">
+      <!-- Category icon / color dot -->
+      <div class="expense-icon-wrap"
+           style="background:{% if expense.category %}{{ expense.category.color }}18{% else %}rgba(179,0,27,0.08){% endif %};">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="{% if expense.category %}{{ expense.category.color }}{% else %}var(--primary){% endif %}"
+             stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <path d="M2 10h20"/>
+        </svg>
+      </div>
+
+      <!-- Description + meta -->
+      <div class="expense-info">
+        <div class="expense-desc">{{ expense.description }}</div>
+        <div class="expense-meta">
+          <span class="expense-date">{{ expense.date|date:"d M Y" }}</span>
+          {% if expense.category %}
+          <span class="chip"
+                style="background:{{ expense.category.color }}15;color:{{ expense.category.color }};">
+            <span class="chip-dot" style="background:{{ expense.category.color }};"></span>
+            {{ expense.category.name }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Amount -->
+      <div class="expense-amount">₹{{ expense.amount|floatformat:2 }}</div>
+
+      <!-- Edit / Delete actions (visible on hover) -->
+      <div class="expense-actions">
+        <a href="{% url 'expense_edit' expense.pk %}"
+           class="btn-icon"
+           aria-label="Edit {{ expense.description }}"
+           title="Edit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </a>
+        <a href="{% url 'expense_delete' expense.pk %}"
+           class="btn-icon"
+           style="color:var(--error);border-color:rgba(220,38,38,0.2);"
+           aria-label="Delete {{ expense.description }}"
+           title="Delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14H6L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4h6v2"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <!-- Empty state -->
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+          <rect x="2" y="5" width="20" height="14" rx="2"/>
+          <path d="M2 10h20"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">No expenses yet</h2>
+      <p class="empty-text">Start by adding your first expense. It only takes a few seconds.</p>
+      <a href="{% url 'expense_add' %}" class="btn btn-primary mt-md" id="btn-add-first">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Add Expense
+      </a>
+    </div>
+  </div>
+  {% endif %}
+  </div>
+
+</div>
+{% endblock %}

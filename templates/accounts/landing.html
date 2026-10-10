@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Smart Expense Tracker — Spend smart. Live well. Track your daily expenses effortlessly.">
+  <title>Smart Expense Tracker — Spend Smart. Live Well.</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/luxury.css' %}">
+</head>
+<body>
+  <!-- Ambient background orbs -->
+  <div class="landing-bg-orb orb-1" aria-hidden="true"></div>
+  <div class="landing-bg-orb orb-2" aria-hidden="true"></div>
+
+  <!-- Minimal navbar for landing -->
+  <nav class="navbar" role="navigation">
+    <div class="navbar-inner">
+      <div class="navbar-brand">
+        <svg class="brand-logo" width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <linearGradient id="logo-grad-lnd" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#E63946"/>
+              <stop offset="50%" stop-color="#B3001B"/>
+              <stop offset="100%" stop-color="#67000F"/>
+            </linearGradient>
+            <linearGradient id="logo-shine-lnd" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FFF" stop-opacity="0.35"/>
+              <stop offset="100%" stop-color="#FFF" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <rect x="2" y="2" width="36" height="36" rx="10" fill="url(#logo-grad-lnd)"/>
+          <rect x="2" y="2" width="36" height="36" rx="10" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <path d="M12 28V12L20 20L28 12V28" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M20 20V28" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
+          <polygon points="20,6 26,12 20,18 14,12" fill="url(#logo-shine-lnd)"/>
+        </svg>
+        <span class="brand-name">Maison Rouge</span>
+      </div>
+      <div class="navbar-actions">
+        <a href="{% url 'login' %}" class="nav-link">Sign In</a>
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">Get Started</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══ Hero Section ═══════════════════════════════════════════ -->
+  <main class="landing-hero" id="main-content">
+    <div class="landing-content">
+      <!-- Eyebrow badge -->
+      <span class="landing-eyebrow">Smart Expense Tracker</span>
+
+      <!-- Hero title -->
+      <h1 class="landing-title">
+        Track every rupee.<br>
+        <span class="accent">Spend smarter.</span>
+      </h1>
+
+      <!-- Tagline -->
+      <p class="landing-tagline">Spend smart. Live well.</p>
+
+      <!-- Feature list -->
+      <ul class="feature-list" role="list">
+        <li class="feature-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          AI Category Prediction
+        </li>
+        <li class="feature-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          Beautiful Charts
+        </li>
+        <li class="feature-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV &amp; PDF Export
+        </li>
+        <li class="feature-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+          Period Filters
+        </li>
+        <li class="feature-item">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Private &amp; Secure
+        </li>
+      </ul>
+
+      <!-- CTA Buttons -->
+      <div class="landing-cta">
+        <a href="{% url 'signup' %}" class="btn btn-primary" id="cta-create-account">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Create Account
+        </a>
+        <a href="{% url 'login' %}" class="btn btn-ghost" id="cta-sign-in">
+          Sign In
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

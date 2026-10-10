@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Page Not Found{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align:center;padding:var(--space-2xl) var(--space-md);">
+  <div class="card" style="max-width:540px;margin:0 auto;padding:var(--space-2xl) var(--space-xl);">
+    <div style="font-family:var(--font-heading);font-size:5rem;color:var(--primary);font-weight:700;line-height:1;margin-bottom:var(--space-sm);">
+      404
+    </div>
+    <h1 style="font-size:1.5rem;margin-bottom:var(--space-sm);">Page Not Found</h1>
+    <p style="color:var(--text-secondary);font-size:14px;margin-bottom:var(--space-xl);">
+      The page or expense you were looking for doesn’t exist or has been removed.
+    </p>
+    <a href="{% url 'dashboard' %}" class="btn btn-primary" id="btn-back-home">
+      Return to Dashboard
+    </a>
+  </div>
+</div>
+{% endblock %}
