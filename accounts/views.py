@@ -36,7 +36,7 @@ def signup_view(request):
             user = form.save()
             # Automatically log the user in after signup
             login(request, user)
-            messages.success(request, f'Welcome to Maison Rouge, {user.username}!')
+            messages.success(request, f'Welcome to Expense Management, {user.username}!')
             return redirect('dashboard')
         else:
             messages.error(request, 'Please fix the errors below.')

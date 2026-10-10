@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="{% block meta_description %}Smart Expense Tracker — Track, analyse, and export your daily expenses with AI-powered category suggestions.{% endblock %}">
-  <title>{% block title %}Smart Expense Tracker{% endblock %} — Maison Rouge</title>
+  <title>{% block title %}Smart Expense Tracker{% endblock %} — Expense Management</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='10' fill='%23B3001B'/%3E%3Cpath d='M12 28V12L20 20L28 12V28M20 20V28' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
   <!-- Google Fonts: Playfair Display + Inter -->
@@ -27,7 +27,7 @@
   {% if user.is_authenticated %}
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-inner">
-      <a href="{% url 'dashboard' %}" class="navbar-brand" aria-label="Maison Rouge Home">
+      <a href="{% url 'dashboard' %}" class="navbar-brand" aria-label="Expense Management Home">
         <svg class="brand-logo" width="30" height="30" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -46,7 +46,7 @@
           <path d="M20 20V28" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="round"/>
           <polygon points="20,6 26,12 20,18 14,12" fill="url(#logo-shine)"/>
         </svg>
-        <span class="brand-name">Maison Rouge</span>
+        <span class="brand-name">Expense Management</span>
       </a>
 
       <div class="navbar-actions">

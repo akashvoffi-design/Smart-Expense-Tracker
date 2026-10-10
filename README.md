@@ -1,6 +1,6 @@
 <div align="center">
 
-#  Maison Rouge — Smart Expense Tracker
+#  Expense Management — Smart Expense Tracker
 
 > **Spend smart. Live well.**  
 > A luxury-grade personal expense tracker built with Django 5, Chart.js, and ReportLab — featuring AI-powered category prediction, beautiful analytics, and one-click PDF/CSV exports.
@@ -470,7 +470,7 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
-Open **http://127.0.0.1:8000/** in your browser — you should see the Maison Rouge landing page. Sign up for a new account and start tracking!
+Open **http://127.0.0.1:8000/** in your browser — you should see the Expense Management landing page. Sign up for a new account and start tracking!
 
 ---
 
@@ -616,7 +616,7 @@ This repository is pre-configured for seamless deployment on [Vercel](https://ve
 
 **Made with ❤️ and ₹ in mind**
 
-*Maison Rouge — Smart Expense Tracker*
+*Expense Management — Smart Expense Tracker*
 
 `Spend smart. Live well.`
 
